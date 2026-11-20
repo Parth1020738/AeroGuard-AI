@@ -1,15 +1,17 @@
 import React from 'react';
-import { ImpactMetrics } from '../../types/airQuality';
+import { ImpactMetrics, LiveAqiReading } from '../../types/airQuality';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
-import { ShieldAlert, Activity, Leaf, Zap } from 'lucide-react';
+import { ShieldAlert, Activity, Leaf, Zap, Radio } from 'lucide-react';
 
 interface ImpactSimulatorProps {
   metrics: ImpactMetrics;
+  liveReading?: LiveAqiReading;
   onEnableAll: () => void;
 }
 
 export function ImpactSimulator({
   metrics,
+  liveReading,
   onEnableAll,
 }: ImpactSimulatorProps): React.JSX.Element {
   return (
@@ -20,9 +22,21 @@ export function ImpactSimulator({
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
-          <span className="text-xs font-semibold text-teal-700 tracking-wider uppercase">
-            Live Simulation Engine
-          </span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-semibold text-teal-700 tracking-wider uppercase">
+              Live Simulation Engine
+            </span>
+            {liveReading?.isLive ? (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                <Radio className="w-2.5 h-2.5 text-teal-700 animate-pulse" aria-hidden="true" />
+                Live: PM2.5 {liveReading.pm25} µg/m³ • PM10 {liveReading.pm10} µg/m³
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600">
+                Simulated Baseline
+              </span>
+            )}
+          </div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Direct Choice Impact Simulator
           </h2>

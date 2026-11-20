@@ -36,6 +36,17 @@ export type HomeType = 'apartment' | 'standalone' | 'highRise';
 export type VentilationRiskLevel = 'lockdown' | 'caution' | 'safe';
 export type AmbientAqiTrend = 'peaking' | 'rising' | 'moderate' | 'falling';
 
+export interface LiveAqiReading {
+  city: string;
+  country: string;
+  aqi: number;
+  pm25: number;
+  pm10: number;
+  source: string;
+  fetchedAt: string;
+  isLive: boolean;
+}
+
 export interface HouseholdProfile {
   city: string;
   outdoorAqi: number;
@@ -46,6 +57,7 @@ export interface HouseholdProfile {
   cleanAirGear: CleanAirGear;
   cookingFuel: CookingFuel;
   updatedAt: string;
+  liveReading?: LiveAqiReading;
 }
 
 export interface ImpactMetrics {
@@ -88,6 +100,7 @@ export interface AirQualityPlan {
   actions: SmogActionItem[];
   ventilationTimeline: VentilationWindow[];
   communityAdvisoryText: string;
+  liveReading?: LiveAqiReading;
 }
 
 export interface PersistedAppState {

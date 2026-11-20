@@ -7,7 +7,7 @@ import { ImpactSimulator } from './components/dashboard/ImpactSimulator';
 import { ActionPillars } from './components/dashboard/ActionPillars';
 import { SmogTimeline } from './components/dashboard/SmogTimeline';
 import { CommunityCard } from './components/dashboard/CommunityCard';
-import { ShieldCheck, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { ShieldCheck, SlidersHorizontal, RefreshCw, Radio } from 'lucide-react';
 
 export function App(): React.JSX.Element {
   const {
@@ -55,7 +55,11 @@ export function App(): React.JSX.Element {
             <div className="flex items-center gap-2.5">
               {plan && (
                 <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  <span className="w-2 h-2 rounded-full bg-teal-600" />
+                  {profile.liveReading?.isLive ? (
+                    <Radio className="w-2.5 h-2.5 text-teal-700 animate-pulse" aria-hidden="true" />
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-teal-600" />
+                  )}
                   {profile.city} (AQI {profile.outdoorAqi})
                 </span>
               )}
@@ -95,7 +99,11 @@ export function App(): React.JSX.Element {
             <LoadingSkeleton label="Synthesizing personalized winter smog defense plan..." rows={3} />
           ) : plan ? (
             <>
-              <ImpactSimulator metrics={impactMetrics} onEnableAll={enableAllHighImpact} />
+              <ImpactSimulator
+                metrics={impactMetrics}
+                liveReading={profile.liveReading}
+                onEnableAll={enableAllHighImpact}
+              />
               <ActionPillars actions={plan.actions} onToggle={toggleAction} />
               <SmogTimeline timeline={plan.ventilationTimeline} />
               <CommunityCard plan={plan} />

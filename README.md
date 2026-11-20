@@ -16,15 +16,21 @@ Dense urban corridors across the Indo-Gangetic basin and major metropolitan cent
 Standard weather apps report passive "doom numbers" without actionable, budget-conscious guidance. Families lack accessible means to afford commercial air purifiers, while schools and neighborhood associations struggle to issue standardized smog advisories.
 
 **AeroGuard AI** is a GenAI-powered urban air quality assistant that empowers families and community organizers to:
-1. Navigate severe winter smog with hyper-localized daily routines.
-2. Build DIY clean air hacks (like Corsi-Rosenthal boxes) that deliver commercial-grade filtration at a fraction of the cost.
-3. Simulate and quantify the direct impact of lifestyle choices (daily PM2.5 inhalation reduction in µg/day and weekly CO₂ saved in kg).
-4. Time safe indoor ventilation during midday thermal inversion lift windows.
-5. Generate and distribute 1-click civic-grade community smog advisories.
+1. Fetch live real-time AQI, PM2.5, and PM10 telemetry for any city globally with verified data provenance.
+2. Navigate severe winter smog with hyper-localized daily routines.
+3. Build DIY clean air hacks (like Corsi-Rosenthal boxes) that deliver commercial-grade filtration at a fraction of the cost.
+4. Simulate and quantify the direct impact of lifestyle choices (daily PM2.5 inhalation reduction in µg/day and weekly CO₂ saved in kg).
+5. Time safe indoor ventilation during midday thermal inversion lift windows.
+6. Generate and distribute 1-click civic-grade community smog advisories.
 
 ---
 
 ## 2. Key Features
+
+- **Real-Time Telemetry Engine (Open-Meteo Integration):**
+  - Instant live AQI, PM2.5 (µg/m³), and PM10 (µg/m³) retrieval across Indian cities (*Delhi*, *Noida*, *Mumbai*, *Kolkata*, *Bengaluru*, *Ahmedabad*, etc.).
+  - Explicit data provenance attribution (`Open-Meteo Air Quality Network`) with live timestamps.
+  - Seamless offline fallback to manual entry or expert presets during network disruptions.
 
 - **3-Step Location & Lifestyle Onboarding Wizard:**
   - Rapid 1-click winter smog presets (*Delhi NCR AQI 420*, *Mumbai Coastal Haze AQI 165*, *Indo-Gangetic Inversion AQI 310*).
@@ -64,58 +70,15 @@ Standard weather apps report passive "doom numbers" without actionable, budget-c
 | **Language** | TypeScript 5.7+ | Strict mode (`strict: true`, `noUncheckedIndexedAccess: true`, zero `any`) |
 | **Build Tool** | Vite 6 | Instant HMR and optimized production bundling (<100KB gzip) |
 | **Styling** | Tailwind CSS v4 | Utility-first zero-runtime CSS with custom environmental health design tokens |
+| **Telemetry** | Open-Meteo Air Quality | Keyless live atmospheric telemetry (AQI, PM2.5, PM10) |
 | **GenAI SDK** | `@google/generative-ai` | Google Gemini API integration with structured JSON outputs |
-| **Testing** | Vitest 3 + RTL | 55+ unit & integration tests with 100% pass rate |
+| **Testing** | Vitest 3 + RTL | 59 unit & integration tests with 100% pass rate |
 | **Linter** | oxlint | Ultra-fast Rust-based static code verification |
 | **Icons** | Lucide React | Accessible SVG iconography |
 
 ---
 
-## 4. Architecture & Security Principles
-
-- **Pure Client SPA:** No backend server or cloud database required; zero user PII collected or stored.
-- **Service-Hook Isolation:** UI components never invoke the Gemini API or access storage directly; all business math lives in pure utility functions (`src/utils/`).
-- **File Length Hard Cap:** Every single source and test file is strictly under 180 lines of code.
-- **OWASP LLM01 Sanitization:** User inputs are defensively sanitized to strip ASCII control codes, zero-width spaces, and injection tokens before prompt interpolation.
-- **Defensive Storage:** Persistent storage (`localStorage['aeroguard_state_v1']`) is wrapped with defensive error handling to prevent quota or private browsing exceptions.
-
----
-
-## 5. Local Development Setup
-
-### Prerequisites
-- Node.js 18+ (tested on Node v20/v22/v25)
-- npm 9+
-
-### Installation Steps
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Parth1020738/AeroGuard-AI.git
-   cd AeroGuard-AI
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment Variables:**
-   Copy `.env.example` to `.env.local` and add your Google Gemini API key:
-   ```bash
-   cp .env.example .env.local
-   ```
-   *Note: If no API key is provided, AeroGuard AI will run in offline mode using the deterministic smog defense engine.*
-
-4. **Start the local development server:**
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your browser.
-
----
-
-## 6. Verification Pipeline
+## 4. Verification Pipeline
 
 Run all verification gates sequentially:
 
@@ -135,5 +98,5 @@ npm run build
 
 ---
 
-## 7. License
+## 5. License
 MIT License. Built for the Hack2Skill PromptWars Virtual Challenge 06.
