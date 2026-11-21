@@ -1,5 +1,11 @@
 import { HouseholdProfile } from '../../types/airQuality';
 
+/**
+ * Generates quick Indian city preset pill models with active selection indicators.
+ * @param currentCity - Active city name in profile.
+ * @param onSelect - Callback triggered when city pill is selected.
+ * @returns Array of quick city button models.
+ */
 export function getIndianQuickCities(
   currentCity: string,
   onSelect: (city: string) => void
@@ -12,6 +18,11 @@ export function getIndianQuickCities(
   }));
 }
 
+/**
+ * Formats live telemetry metadata into headline and subline strings for UI presentation.
+ * @param profile - Current household profile containing optional live telemetry.
+ * @returns Formatted headline and subline strings, or null if telemetry is absent.
+ */
 export function formatTelemetryBadge(profile: HouseholdProfile): {
   headline: string;
   subline: string;

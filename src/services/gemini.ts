@@ -1,18 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AirQualityPlan, HouseholdProfile } from '../types/airQuality';
 import { sanitizePromptInput, isValidAirQualityPlan } from '../utils/sanitizers';
+import { safeParseJson } from '../utils/httpClient';
 import { generateFallbackSmogPlan } from './fallbackSmogPlan';
-
-// Failover model chain: Most economical flash-lite first, then standard flash, then latest flash
-const MODEL_FAILOVER_CHAIN = [
-  'gemini-3.5-flash-lite',
-  'gemini-3.5-flash',
-  'gemini-3.8-flash',
-];
+import { GEMINI_MODEL_CHAIN, INPUT_BOUNDS } from '../constants/airQualityConstants';
 
 function buildPlanPrompt(profile: HouseholdProfile): string {
   const city = sanitizePromptInput(profile.city, 40) || 'Delhi NCR';
-  const aqi = Math.max(0, Math.min(999, profile.outdoorAqi));
+  const aqi = Math.max(INPUT_BOUNDS.AQI_MIN, Math.min(INPUT_BOUNDS.AQI_MAX, profile.outdoorAqi));
   const vulnerabilities = profile.vulnerabilities.join(', ') || 'none';
 
   return `Generate an urban air quality action plan for:
@@ -53,6 +48,12 @@ Return strictly JSON matching this structure:
 Include exactly 9 actions (3 per category) and 4 ventilationTimeline blocks. No markdown formatting.`;
 }
 
+/**
+ * Synthesizes a personalized air quality plan via Gemini with automatic multi-model failover.
+ * Falls back to deterministic offline plan if API key is absent, rate-limited, or network fails.
+ * @param profile - Household demographics, vulnerabilities, and outdoor AQI.
+ * @returns Validated AirQualityPlan matching the domain schema.
+ */
 export async function fetchAirQualityPlan(
   profile: HouseholdProfile
 ): Promise<AirQualityPlan> {
@@ -65,7 +66,7 @@ export async function fetchAirQualityPlan(
   const genAI = new GoogleGenerativeAI(apiKey.trim());
   const prompt = buildPlanPrompt(profile);
 
-  for (const modelName of MODEL_FAILOVER_CHAIN) {
+  for (const modelName of GEMINI_MODEL_CHAIN) {
     try {
       const model = genAI.getGenerativeModel({
         model: modelName,
@@ -77,7 +78,7 @@ export async function fetchAirQualityPlan(
 
       const result = await model.generateContent(prompt);
       const text = result.response.text();
-      const parsed: unknown = JSON.parse(text);
+      const parsed = safeParseJson<unknown>(text);
 
       if (isValidAirQualityPlan(parsed)) {
         return {
@@ -85,11 +86,11 @@ export async function fetchAirQualityPlan(
           isOfflineFallback: false,
         };
       }
-    } catch (error) {
-      console.warn(`[gemini] Model "${modelName}" failed or unparseable, trying next:`, error);
+    } catch {
+      // Continue to next failover model in GEMINI_MODEL_CHAIN
+      continue;
     }
   }
 
-  // If all models in the chain fail, seamlessly return deterministic plan
   return generateFallbackSmogPlan(profile);
 }

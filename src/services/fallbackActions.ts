@@ -1,5 +1,10 @@
 import { SmogActionItem } from '../types/airQuality';
 
+/**
+ * Generates calibrated smog mitigation actions based on severe inversion conditions.
+ * @param isSevere - Whether AQI indicates severe thermal inversion (AQI >= 250).
+ * @returns Array of 9 pre-calibrated SmogActionItem domain objects across 3 pillars.
+ */
 export function getFallbackActions(isSevere: boolean): SmogActionItem[] {
   return [
     {

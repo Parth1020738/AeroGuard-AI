@@ -72,6 +72,11 @@ function buildFallbackTimeline(aqi: number): VentilationWindow[] {
   ];
 }
 
+/**
+ * Generates an expert-calibrated deterministic air quality action plan offline.
+ * @param profile - User household parameters and outdoor AQI level.
+ * @returns Complete AirQualityPlan guaranteed to satisfy domain type guards.
+ */
 export function generateFallbackSmogPlan(profile: HouseholdProfile): AirQualityPlan {
   const severity = classifyAqiSeverity(profile.outdoorAqi);
   const severityLabelMap = {

@@ -9,8 +9,7 @@ import { calculateImpactMetrics } from '../utils/impactCalculator';
 import { safeGetStorage, safeSetStorage } from '../utils/storage';
 import { fetchAirQualityPlan } from '../services/gemini';
 import { generateFallbackSmogPlan } from '../services/fallbackSmogPlan';
-
-const STORAGE_KEY = 'aeroguard_state_v1';
+import { STORAGE_KEY } from '../constants/airQualityConstants';
 
 export const DEFAULT_PROFILE: HouseholdProfile = {
   city: 'Delhi NCR',
@@ -38,6 +37,11 @@ export interface UseAirQualityPlannerResult {
   resetPlan: () => void;
 }
 
+/**
+ * Primary state management hook coordinating profile configuration, API generation,
+ * local storage synchronization, action toggle simulation, and offline fallback.
+ * @returns State object and dispatch handlers for onboarding and dashboard views.
+ */
 export function useAirQualityPlanner(): UseAirQualityPlannerResult {
   const [persisted, setPersisted] = useState<PersistedAppState>(() => {
     return safeGetStorage<PersistedAppState>(STORAGE_KEY, {
@@ -60,6 +64,7 @@ export function useAirQualityPlanner(): UseAirQualityPlannerResult {
 
   const profile = persisted.profile;
   const plan = persisted.activePlan;
+  const hasCompletedOnboarding = persisted.hasCompletedOnboarding;
 
   const impactMetrics = useMemo<ImpactMetrics>(() => {
     if (!plan || !plan.actions) {
@@ -163,7 +168,7 @@ export function useAirQualityPlanner(): UseAirQualityPlannerResult {
     isLoading,
     error,
     impactMetrics,
-    hasCompletedOnboarding: persisted.hasCompletedOnboarding,
+    hasCompletedOnboarding,
     updateProfile,
     generatePlan,
     toggleAction,

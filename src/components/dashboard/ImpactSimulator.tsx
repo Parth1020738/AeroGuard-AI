@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImpactMetrics, LiveAqiReading } from '../../types/airQuality';
-import { DisclaimerBanner } from '../common/DisclaimerBanner';
+import { MetricBadge } from '../common/MetricBadge';
 import { ShieldAlert, Activity, Leaf, Zap, Radio } from 'lucide-react';
 
 interface ImpactSimulatorProps {
@@ -58,63 +58,30 @@ export function ImpactSimulator({
         aria-live="polite"
         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
-        {/* PM2.5 Inhalation Reduction */}
-        <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-600 text-xs font-medium mb-1.5">
-            <Activity className="w-4 h-4 text-teal-700" aria-hidden="true" />
-            <span>Daily PM2.5 Inhaled Reduction</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-teal-800 tabular-nums">
-              -{metrics.dailyPm25ReductionUgm3}
-            </span>
-            <span className="text-xs font-semibold text-teal-700">µg/day</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-500 font-medium">
-            ↓ {metrics.pm25ReductionPercent}% reduction from baseline
-          </p>
-        </div>
-
-        {/* Weekly Carbon Saved */}
-        <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-600 text-xs font-medium mb-1.5">
-            <Leaf className="w-4 h-4 text-green-700" aria-hidden="true" />
-            <span>Weekly Carbon Prevented</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-green-800 tabular-nums">
-              {metrics.weeklyCo2SavedKg}
-            </span>
-            <span className="text-xs font-semibold text-green-700">kg CO₂e</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-500 font-medium">
-            Scaled to household transit & fuel
-          </p>
-        </div>
-
-        {/* Protection Score */}
-        <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-600 text-xs font-medium mb-1.5">
-            <ShieldAlert className="w-4 h-4 text-teal-700" aria-hidden="true" />
-            <span>Household Protection Score</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums">
-              {metrics.protectionScore}
-            </span>
-            <span className="text-xs font-semibold text-slate-500">/ 100</span>
-          </div>
-          {/* Progress bar */}
-          <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-teal-700 h-1.5 rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, metrics.protectionScore)}%` }}
-            />
-          </div>
-        </div>
+        <MetricBadge
+          icon={<Activity className="w-4 h-4 text-teal-700" aria-hidden="true" />}
+          label="Daily PM2.5 Inhaled Reduction"
+          value={`-${metrics.dailyPm25ReductionUgm3}`}
+          unit="µg/day"
+          subtext={`↓ ${metrics.pm25ReductionPercent}% reduction from baseline`}
+          valueColorClass="text-teal-800"
+        />
+        <MetricBadge
+          icon={<Leaf className="w-4 h-4 text-green-700" aria-hidden="true" />}
+          label="Weekly Carbon Prevented"
+          value={metrics.weeklyCo2SavedKg}
+          unit="kg CO₂e"
+          subtext="Scaled to household transit & fuel"
+          valueColorClass="text-green-800"
+        />
+        <MetricBadge
+          icon={<ShieldAlert className="w-4 h-4 text-teal-700" aria-hidden="true" />}
+          label="Household Protection Score"
+          value={metrics.protectionScore}
+          unit="/ 100"
+          progressPercent={metrics.protectionScore}
+        />
       </div>
-
-      <DisclaimerBanner />
     </section>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAirQualityPlanner } from './hooks/useAirQualityPlanner';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { LoadingSkeleton } from './components/common/LoadingSkeleton';
+import { MetricBadge } from './components/common/MetricBadge';
 import { OnboardingWizard } from './components/wizard/OnboardingWizard';
 import { ImpactSimulator } from './components/dashboard/ImpactSimulator';
 import { ActionPillars } from './components/dashboard/ActionPillars';
@@ -54,14 +55,18 @@ export function App(): React.JSX.Element {
 
             <div className="flex items-center gap-2.5">
               {plan && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  {profile.liveReading?.isLive ? (
-                    <Radio className="w-2.5 h-2.5 text-teal-700 animate-pulse" aria-hidden="true" />
-                  ) : (
-                    <span className="w-2 h-2 rounded-full bg-teal-600" />
-                  )}
-                  {profile.city} (AQI {profile.outdoorAqi})
-                </span>
+                <MetricBadge
+                  variant="pill"
+                  className="hidden sm:inline-flex bg-slate-100 text-slate-700 border-slate-200"
+                  icon={
+                    profile.liveReading?.isLive ? (
+                      <Radio className="w-2.5 h-2.5 text-teal-700 animate-pulse" aria-hidden="true" />
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-teal-600" />
+                    )
+                  }
+                  label={`${profile.city} (AQI ${profile.outdoorAqi})`}
+                />
               )}
 
               {hasCompletedOnboarding && !showWizard && (
@@ -114,13 +119,6 @@ export function App(): React.JSX.Element {
             </div>
           )}
         </main>
-
-        {/* Footer */}
-        <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
-          <p>
-            AeroGuard AI • Hack2Skill PromptWars Challenge 06 • Urban Air Quality Assistant
-          </p>
-        </footer>
       </div>
     </ErrorBoundary>
   );

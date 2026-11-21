@@ -2,7 +2,7 @@ import React from 'react';
 import { HouseholdProfile, HomeType, VulnerabilityGroup } from '../../types/airQuality';
 import { DWELLING_OPTIONS, VULNERABILITY_OPTIONS } from './wizardConstants';
 import { ValidationErrors } from '../../utils/validators';
-import { Check } from 'lucide-react';
+import { SelectableOption } from '../common/SelectableOption';
 
 interface WizardStep2Props {
   profile: HouseholdProfile;
@@ -73,40 +73,20 @@ export function WizardStep2({ profile, errors, onChange }: WizardStep2Props): Re
           aria-labelledby="vuln-label"
           className="grid grid-cols-1 sm:grid-cols-2 gap-2.5"
         >
-          {VULNERABILITY_OPTIONS.map((opt) => {
-            const isSelected = profile.vulnerabilities.includes(opt.value);
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                role="checkbox"
-                aria-checked={isSelected}
-                onClick={() => handleToggleVulnerability(opt.value)}
-                className={`p-3 text-left rounded-xl border transition-all text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${
-                  isSelected
-                    ? 'border-teal-700 bg-teal-50/80 shadow-sm'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center justify-between font-semibold text-slate-900">
-                  <span>{opt.label}</span>
-                  <div
-                    className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                      isSelected
-                        ? 'bg-teal-700 border-teal-700 text-white'
-                        : 'border-slate-300 bg-white'
-                    }`}
-                  >
-                    {isSelected && <Check className="w-3 h-3 stroke-[3]" aria-hidden="true" />}
-                  </div>
-                </div>
-                {opt.description && (
-                  <p className="mt-1 text-[11px] text-slate-500 leading-normal">{opt.description}</p>
-                )}
-              </button>
-            );
-          })}
+          {VULNERABILITY_OPTIONS.map((opt) => (
+            <SelectableOption
+              key={opt.value}
+              label={opt.label}
+              selected={profile.vulnerabilities.includes(opt.value)}
+              onSelect={() => handleToggleVulnerability(opt.value)}
+              description={opt.description}
+              role="checkbox"
+            />
+          ))}
         </div>
+        {errors.vulnerabilities && (
+          <p className="mt-1.5 text-xs text-red-600 font-medium">{errors.vulnerabilities}</p>
+        )}
       </div>
     </section>
   );
