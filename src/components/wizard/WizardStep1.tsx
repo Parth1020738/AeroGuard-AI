@@ -120,6 +120,7 @@ export function WizardStep1({ profile, errors, onChange }: WizardStep1Props): Re
             <input
               id="city-input"
               type="text"
+              aria-required="true"
               value={profile.city}
               onChange={(e) => onChange({ city: e.target.value })}
               placeholder="e.g. Delhi, Noida, Mumbai"
@@ -145,6 +146,7 @@ export function WizardStep1({ profile, errors, onChange }: WizardStep1Props): Re
             type="number"
             min={0}
             max={999}
+            aria-required="true"
             value={Number.isNaN(profile.outdoorAqi) ? '' : profile.outdoorAqi}
             onChange={(e) => onChange({ outdoorAqi: parseInt(e.target.value, 10) || 0, liveReading: undefined })}
             className={`block w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-600 ${errors.outdoorAqi ? 'border-red-500' : 'border-slate-300'}`}

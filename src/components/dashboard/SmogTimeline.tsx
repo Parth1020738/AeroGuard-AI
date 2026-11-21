@@ -48,13 +48,13 @@ export function SmogTimeline({ timeline }: SmogTimelineProps): React.JSX.Element
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
-        {timeline.map((win, idx) => {
+        {timeline.map((win) => {
           const config = riskBadgeConfig[win.riskLevel];
           const IconComponent = config.icon;
 
           return (
             <div
-              key={idx}
+              key={win.hourRange}
               className={`p-4 rounded-xl border flex flex-col justify-between ${config.bg}`}
             >
               <div>

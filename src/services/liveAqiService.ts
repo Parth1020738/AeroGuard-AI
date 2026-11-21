@@ -27,11 +27,26 @@ interface AirQualityApiResponse {
   };
 }
 
+export interface CachedCoordinates {
+  latitude: number;
+  longitude: number;
+  name: string;
+  country: string;
+}
+
 const HTTP_TIMEOUT_MS = 8000;
+const geoCache = new Map<string, CachedCoordinates>();
+
+/**
+ * Resets internal geocoding memory cache (primarily used for test isolation).
+ */
+export function clearGeoCache(): void {
+  geoCache.clear();
+}
 
 /**
  * Keyless real-time air quality telemetry fetcher for cities across India and globally.
- * Uses Open-Meteo Geocoding & Open-Meteo Air Quality APIs.
+ * Uses Open-Meteo Geocoding (with in-memory coordinate cache) & Air Quality APIs.
  */
 export async function fetchLiveCityAqi(cityName: string): Promise<LiveAqiReading> {
   const cleanCity = sanitizePromptInput(cityName, 60);
@@ -39,19 +54,32 @@ export async function fetchLiveCityAqi(cityName: string): Promise<LiveAqiReading
     throw new Error(`City name must contain at least ${INPUT_BOUNDS.CITY_MIN_CHARS} characters.`);
   }
 
-  // 1. Resolve geographic coordinates
-  const geoUrl = `${OPEN_METEO_GEOCODING_URL}?name=${encodeURIComponent(
-    cleanCity
-  )}&count=1&language=en&format=json`;
+  // 1. Resolve geographic coordinates (check cache first)
+  const cacheKey = cleanCity.toLowerCase();
+  let coords = geoCache.get(cacheKey);
 
-  const geoData = await fetchJsonWithTimeout<GeocodingApiResponse>(geoUrl, HTTP_TIMEOUT_MS);
-  const firstMatch = geoData.results?.[0];
+  if (!coords) {
+    const geoUrl = `${OPEN_METEO_GEOCODING_URL}?name=${encodeURIComponent(
+      cleanCity
+    )}&count=1&language=en&format=json`;
 
-  if (!firstMatch || typeof firstMatch.latitude !== 'number' || typeof firstMatch.longitude !== 'number') {
-    throw new Error(`Location "${cleanCity}" not found. Please verify spelling.`);
+    const geoData = await fetchJsonWithTimeout<GeocodingApiResponse>(geoUrl, HTTP_TIMEOUT_MS);
+    const firstMatch = geoData.results?.[0];
+
+    if (!firstMatch || typeof firstMatch.latitude !== 'number' || typeof firstMatch.longitude !== 'number') {
+      throw new Error(`Location "${cleanCity}" not found. Please verify spelling.`);
+    }
+
+    coords = {
+      latitude: firstMatch.latitude,
+      longitude: firstMatch.longitude,
+      name: firstMatch.name,
+      country: firstMatch.country ?? 'India',
+    };
+    geoCache.set(cacheKey, coords);
   }
 
-  const { latitude, longitude, name: resolvedCity, country = 'India' } = firstMatch;
+  const { latitude, longitude, name: resolvedCity, country } = coords;
 
   // 2. Fetch live atmospheric particulate telemetry
   const aqiUrl = `${OPEN_METEO_AIR_QUALITY_URL}?latitude=${latitude}&longitude=${longitude}&current=us_aqi,pm2_5,pm10`;

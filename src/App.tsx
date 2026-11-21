@@ -34,6 +34,12 @@ export function App(): React.JSX.Element {
 
   return (
     <ErrorBoundary>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-teal-700 focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to main content
+      </a>
       <div className="min-h-screen bg-slate-50 flex flex-col antialiased text-slate-900">
         {/* Sticky App Header */}
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 px-4 sm:px-8 py-3">
@@ -93,7 +99,7 @@ export function App(): React.JSX.Element {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <main id="main-content" className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {showWizard ? (
             <OnboardingWizard
               initialProfile={profile}
